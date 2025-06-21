@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcell</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}"> 
+    <link rel="icon" href="{% static 'images/icon.png' %}" type="image/x-icon">
+</head>
+<body>
+
+    <!-- Header start -->
+    <span id="cart-count">{{ order.get_cart_items }}</span>
+    <header class="header">
+        <div class="wrapper">
+            <div class="headerWrapper">
+                <div class="headerLogo">
+                    <a href="/">
+                        <img src="{% static 'images/logo/photo_5197267495017372064_x 1.png' %}" alt="Company Logo">
+                    </a>
+                </div>
+
+                <nav class="headerNav">
+                    <ul class="headerList">
+                        <li class="headerItem">
+                            <a href="/" class="headerLink">Home</a>
+                        </li>
+                        <li class="headerItem">
+                            <a href="/shop" class="headerLink">Shop Online</a>
+                        </li>
+                        <li class="headerItem">
+                            <a href="/news" class="headerLink">What's New</a>
+                        </li>
+                        <li class="headerItem">
+                            <a href="#!" class="headerLink">Contact</a>
+                        </li>
+                        <li class="headerItem">
+                            <a href="#!" class="headerLink">About us</a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="headerShopLogo">
+                    <a href="/cart" class="headerShopLogoLink">
+                        <img src="{% static 'images/logo/shopping-cart (3) 1.png' %}" alt="Cart">
+                        <span id="cart-count">{{ order.get_cart_items }}</span>
+                    </a>
+                    
+                    <a href="/login" class="headerShopUser">
+                        <img src="{% static 'images/logo/user (1).png' %}" alt="User">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+    <!-- Header end -->
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- Footer start -->
+    <footer class="footer">
+        <div class="wrapper">
+            <div class="footerBack">
+                <img src="{% static 'images/logo/photo_5197267495017372064_x 2.png' %}" alt="logo" class="logoFooter">
+                <div class="infoItems">
+                    <div class="infoItem">
+                        <h4 class="infoTitle">Contact Us</h4>
+                        <p class="infoDesc">Do you have any questions? We are always ready to help! 
+                            <br><br> Phone: <br>+1-555-123-4567 
+                            <br> Mail: <br>info@Marcell.com 
+                            <br> Address: <br>14 Arcax Street</p>
+                    </div>
+                </div>
+                <div class="infoItems">
+                    <div class="infoItem">
+                        <h4 class="infoTitle">Pages</h4>
+                        <div class="infoDesc">
+                            <a href="#!" class="infoLink">Home</a>
+                            <a href="#!" class="infoLink">Shop Online</a>
+                            <a href="#!" class="infoLink">Contact us</a>
+                            <a href="#!" class="infoLink">About us</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="infoItems">
+                    <div class="infoItem">
+                        <h4 class="infoTitle">Categories</h4>
+                        <div class="infoDesc">
+                            <a href="#!" class="infoLink">Ring</a>
+                            <a href="#!" class="infoLink">Necklaces</a>
+                            <a href="#!" class="infoLink">Earrings</a>
+                            <a href="#!" class="infoLink">Accessories</a>
+                            <a href="#!" class="infoLink">Bracelets</a>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Footer end -->
+
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+
+</body>
+</html>

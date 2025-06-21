@@ -1,0 +1,154 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Intro start -->
+    <section class="Intro">
+        <img src="{% static 'images/logo/Group 1512.png' %}" alt="def" class="Banner1">
+        <div class="wrapper">
+            <a href="#!" class="CategoriesTitle">
+                Shop Our Top Categories
+            </a>
+            <div class="category">
+                <div class="categoryItem">
+                    <img class="categoryImage" src="{% static 'images/categories/photo_5289914092825471195_x.png' %}" alt="Ring">
+                    <h4 class="categoryTitle">Ring</h4>
+                </div>
+                <div class="categoryItem">
+                    <img class="categoryImage" src="{% static 'images/categories/photo_5289914092825471194_x.png' %}" alt="Necklaces">
+                    <h4 class="categoryTitle">Necklaces</h4>
+                </div>
+                <div class="categoryItem">
+                    <img class="categoryImage" src="{% static 'images/categories/photo_5289914092825471193_x.png' %}" alt="Earrings">
+                    <h4 class="categoryTitle">Earrings</h4>
+                </div>
+                <div class="categoryItem">
+                    <img class="categoryImage" src="{% static 'images/categories/photo_5289914092825471192_x.png' %}" alt="Bracelets">
+                    <h4 class="categoryTitle">Bracelets</h4>
+                </div>
+                <div class="categoryItem">
+                    <img class="categoryImage" src="{% static 'images/categories/photo_5289914092825471191_x.png' %}" alt="Accessories">
+                    <h4 class="categoryTitle">Accessories</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Intro end -->
+
+    <!-- Product start -->
+    <section class="Products">
+        <div class="wrapper"> 
+            <a href="#!" class="CategoriesTitle">
+                Best Deals For You!
+            </a>
+            <div class="productItems">
+            {% for product in products %}
+                <div class="productItem">
+                    <div class="productImage">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="productInfo">
+                        <h4 class="productTitle">{{ product.name }}</h4>
+                        <p class="productDesc">{{ product.brend_name }} <br> Model Number/{{ product.model_number }} <br> ${{ product.price }}</p>
+                        
+                        <div class="cart-item-quantity">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity-{{ product.id }}" class="cart-item-quantity" value="1" min="1">
+                        </div>
+
+                        <button data-product="{{ product.id }}" data-action="add" class="addToCart updateCart">Add to cart</button>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+        <div class="seeMore">
+            <a href="/shop" class="seeMoreLink">See more</a>
+        </div>
+        <div class="secondBannerInfo">
+            <img src="{% static 'images/logo/Group 1533.png' %}" alt="secondBanner" class="secondBanner">
+        </div>
+    </section>
+    <!-- Product end -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const user = "{{ request.user|default:'AnonymousUser' }}";
+            const updateBtns = document.querySelectorAll('.updateCart');
+        
+            updateBtns.forEach(button => {
+                button.addEventListener('click', function () {
+                    const productId = this.dataset.product;
+                    const action = this.dataset.action;
+                    const quantityInput = document.getElementById(`quantity-${productId}`);
+                    const quantity = quantityInput ? quantityInput.value : 1;
+        
+                    if (user === 'AnonymousUser') {
+                        alert('Please log in to add items to your cart.');
+                        window.location.href = '/login/';
+                        return;
+                    }
+                    this.disabled = true;
+                    this.textContent = 'Adding...';
+        
+                    updateUserOrder(productId, action, quantity)
+                        .then(() => {
+                            this.textContent = 'Added!';
+                            setTimeout(() => {
+                                this.textContent = 'Add to cart';
+                                this.disabled = false;
+                            }, 1000);
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("There was an error updating your cart.");
+                            this.textContent = 'Add to cart';
+                            this.disabled = false;
+                        });
+                });
+            });
+        
+            async function updateUserOrder(productId, action, quantity) {
+                const response = await fetch('/update_item/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        action: action,
+                        quantity: quantity
+                    })
+                });
+        
+                const data = await response.json();
+        
+                if (data.cart_items !== undefined) {
+                    const cartCountElement = document.getElementById('cart-count');
+                    if (cartCountElement) {
+                        cartCountElement.innerText = data.cart_items;
+                    }
+                }
+        
+                return data;
+            }
+        
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+        </script>
+        
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Cart Section Start -->
+<section class="cart-section">
+    <div class="wrapper">
+        <h1 class="cart-title">Your Shopping Cart</h1>
+        <div class="cart-items">
+            {% for item in items %}
+            <div class="cart-item">
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
+                <div class="cart-item-info">
+                    <h4 class="cart-item-name">{{ item.product.name }}</h4>
+                    <p class="cart-item-price">${{ item.product.price|floatformat:2 }}</p>
+                    <div class="cart-item-quantity">
+                        <label for="quantity-{{ item.id }}">Quantity:</label>
+                        <input type="number" id="quantity-{{ item.id }}" class="quantity" value="{{ item.quantity }}" min="1">
+                    </div>
+                </div>
+                <form method="POST" action="{% url 'remove_item' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="remove-item">Remove</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="cart-summary">
+            <h3>Cart Summary</h3>
+            <p>Total items: <span id="total-items">{{ total_items }}</span></p>
+            <p>Total price: <span id="total-price">${{ total_price|floatformat:2 }}</span></p>
+            <a href="/checkout">
+                <button class="checkout-btn">Proceed to Checkout</button>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Cart Section End -->
+<script>
+    // Get CSRF token from cookies (required for POST in Django)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+    document.querySelectorAll('.quantity').forEach(input => {
+        input.addEventListener('change', function () {
+            const itemId = this.id.split('-')[1];
+            const newQuantity = this.value;
+
+            if (newQuantity < 1) {
+                alert('Quantity must be at least 1.');
+                this.value = 1;
+                return;
+            }
+
+            fetch('/update_cart_quantity/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({
+                    'item_id': itemId,
+                    'quantity': newQuantity
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Updated:', data);
+                document.getElementById('total-items').innerText = data.total_items;
+                document.getElementById('total-price').innerText = '$' + data.total_price.toFixed(2);
+            });
+        });
+    });
+</script>
+
+{% endblock content %}

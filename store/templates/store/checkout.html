@@ -1,0 +1,69 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Checkout Page -->
+<section class="checkout-section">
+    <div class="wrapper">
+        <a href="/cart" class="checkout-title">Back to Cart</a>
+        <div class="checkout-content">
+            <!-- First Box: Billing Information -->
+            <div class="checkout-box billing-info">
+                <h2>Billing Information</h2>
+                <form action="{% url 'submit_order' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-row">
+                        <label for="name">Full Name:</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-row">
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" name="address" required placeholder="Enter your address">
+                    </div>
+                    <div class="form-row">
+                        <label for="city">City:</label>
+                        <input type="text" id="city" name="city" required placeholder="Enter your city">
+                    </div>
+                    <div class="form-row">
+                        <label for="state">State:</label>
+                        <input type="text" id="state" name="state" required placeholder="Enter your state">
+                    </div>
+                    <div class="form-row">
+                        <label for="zip">Zip Code:</label>
+                        <input type="text" id="zip" name="zip" required placeholder="Enter your zip code">
+                    </div>
+                    <button type="submit" class="btn continue-btn">Continue</button>
+                </form>
+            </div>
+
+            <!-- Second Box: Order Summary -->
+            <div class="checkout-box order-summary">
+                <h2>Order Summary</h2>
+                <div class="order-items">
+                    {% for item in items %}
+                    <div class="order-item">
+                        <img src="{{ item.product.image.url }}" alt="Item" class="order-item-img">
+                        <div class="order-item-info">
+                            <h4 class="order-item-name">{{ item.product.name }}</h4>
+                            <p class="order-item-price">${{ item.product.price|floatformat:2 }}</p>
+                            <p class="order-item-quantity">Quantity: {{ item.quantity }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Total Price -->
+                <div class="order-total">
+                    <p>Total price: <span id="total-price">${{ total_price|floatformat:2 }}</span></p>
+                </div>
+
+                <!-- Checkout Button -->
+                <button type="submit" class="btn checkout-btn">Proceed to Payment</button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
